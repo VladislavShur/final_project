@@ -1,0 +1,4 @@
+timestamp,test_name,status,duration_sec,severity,message
+2026-11-11 10:00:00,בדיקת_התחברות,FAIL,שלוש_שניות,ERROR,נכשלה ההתחברות למערכת
+2026-11-11 10:01:00,בדיקת_תשלום,PASS,12.5,INFO,התשלום בוצע בהצלחה
+2026-11-11 10:02:00,test_special,FAIL,!@#$%^,CRITICAL,שגיאה קריטית במסד

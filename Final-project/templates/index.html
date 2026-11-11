@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול ובקרה - Operations & QA Suite</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/30">
+                    QA
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Enterprise Operations & QA Hub</h1>
+                    <p class="text-xs text-slate-400">Task Manager | Asset Tracker | Log Analyzer</p>
+                </div>
+            </div>
+            <!-- Tabs Navigation -->
+            <div class="flex bg-slate-900/60 p-1 rounded-xl border border-slate-700">
+                <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all bg-indigo-600 text-white shadow">
+                    ניהול משימות (Tasks)
+                </button>
+                <button onclick="switchTab('assets')" id="tab-assets" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-white">
+                    מעקב ציוד (Assets)
+                </button>
+                <button onclick="switchTab('logs')" id="tab-logs" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-white">
+                    ניתוח לוגים (Logs)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+        <!-- Toast Notification -->
+        <div id="toast" class="hidden fixed bottom-6 left-6 z-50 px-5 py-3 rounded-xl shadow-2xl transition-all duration-300"></div>
+
+        <!-- TAB 1: TASKS -->
+        <section id="panel-tasks" class="space-y-6">
+            <div class="flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">משימות פיתוח ובדיקה (Task Tracker)</h2>
+                    <p class="text-sm text-slate-400">טעינה, הוספה, עדכון סטטוס ומחיקת משימות</p>
+                </div>
+                <button onclick="loadTasks()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-sm flex items-center gap-2">
+                    🔄 רענן משימות
+                </button>
+            </div>
+
+            <!-- Add Task Form -->
+            <div class="bg-slate-800/60 border border-slate-700 p-5 rounded-2xl">
+                <h3 class="text-md font-semibold mb-3 text-indigo-400">הוספת משימה חדשה</h3>
+                <form id="add-task-form" onsubmit="handleAddTask(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" id="task-name" placeholder="שם המשימה..." required class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 outline-none">
+                    <input type="text" id="task-suite" placeholder="מקצה בדיקה (Test Suite)" class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 outline-none">
+                    <select id="task-priority" class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 outline-none">
+                        <option value="Medium">עדיפות: Medium</option>
+                        <option value="High">עדיפות: High</option>
+                        <option value="Low">עדיפות: Low</option>
+                    </select>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl px-4 py-2.5 text-sm shadow-lg shadow-indigo-600/30 transition-all">
+                        + הוסף משימה
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tasks Table -->
+            <div class="bg-slate-800/40 border border-slate-700 rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead class="bg-slate-800/80 text-slate-400 text-xs uppercase border-b border-slate-700">
+                            <tr>
+                                <th class="px-6 py-4">#</th>
+                                <th class="px-6 py-4">שם המשימה</th>
+                                <th class="px-6 py-4">מקצה (Suite)</th>
+                                <th class="px-6 py-4">עדיפות</th>
+                                <th class="px-6 py-4">סטטוס</th>
+                                <th class="px-6 py-4">פעולות</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasks-table-body" class="divide-y divide-slate-700/60">
+                            <tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">טוען משימות...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: ASSETS -->
+        <section id="panel-assets" class="hidden space-y-6">
+            <div class="flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">מעקב ציוד והשאלות (Asset & License Tracker)</h2>
+                    <p class="text-sm text-slate-400">ניהול שיוך חומרה ורישיונות עם מניעת כפילויות</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="exportAssetReport()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-sm flex items-center gap-2 shadow-lg shadow-emerald-600/30">
+                        📄 ייצא דו"ח נכסים
+                    </button>
+                    <button onclick="loadAssets()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-sm">
+                        🔄 רענן
+                    </button>
+                </div>
+            </div>
+
+            <!-- Assign Asset Form -->
+            <div class="bg-slate-800/60 border border-slate-700 p-5 rounded-2xl">
+                <h3 class="text-md font-semibold mb-3 text-cyan-400">שיוך / השאלת ציוד</h3>
+                <form id="assign-asset-form" onsubmit="handleAssignAsset(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" id="asset-name" placeholder="שם הציוד (למשל: MacBook M2)" required class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-cyan-500 outline-none">
+                    <input type="text" id="asset-employee" placeholder="שם העובד המקבל" required class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-cyan-500 outline-none">
+                    <select id="asset-category" class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:border-cyan-500 outline-none">
+                        <option value="Hardware">Hardware (חומרה)</option>
+                        <option value="License">Software License (רישיון)</option>
+                    </select>
+                    <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl px-4 py-2.5 text-sm shadow-lg shadow-cyan-600/30 transition-all">
+                        שייך לעובד
+                    </button>
+                </form>
+            </div>
+
+            <!-- Assets Table -->
+            <div class="bg-slate-800/40 border border-slate-700 rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead class="bg-slate-800/80 text-slate-400 text-xs uppercase border-b border-slate-700">
+                            <tr>
+                                <th class="px-6 py-4">#</th>
+                                <th class="px-6 py-4">שם הנכס</th>
+                                <th class="px-6 py-4">קטגוריה</th>
+                                <th class="px-6 py-4">משויך לעובד</th>
+                                <th class="px-6 py-4">סטטוס</th>
+                                <th class="px-6 py-4">פעולות</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assets-table-body" class="divide-y divide-slate-700/60">
+                            <tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">טוען נכסים...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: LOGS -->
+        <section id="panel-logs" class="hidden space-y-6">
+            <div class="flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">ניתוח לוגים ודוחות ריצה (Test Log Analyzer)</h2>
+                    <p class="text-sm text-slate-400">טעינת קובצי ריצה, חישוב מדדים וזיהוי כשלי בדיקות</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="loadSampleLogs()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-sm shadow-lg shadow-indigo-600/30">
+                        ⚡ טען לוג לדוגמה
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats KPI Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-slate-800/60 border border-slate-700 p-5 rounded-2xl">
+                    <div class="text-xs text-slate-400">סה"כ בדיקות שהורצו</div>
+                    <div id="stat-total" class="text-2xl font-bold text-white mt-1">0</div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700 p-5 rounded-2xl">
+                    <div class="text-xs text-slate-400">בדיקות שעברו (Passed)</div>
+                    <div id="stat-passed" class="text-2xl font-bold text-emerald-400 mt-1">0</div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700 p-5 rounded-2xl">
+                    <div class="text-xs text-slate-400">בדיקות שנכשלו (Failed)</div>
+                    <div id="stat-failed" class="text-2xl font-bold text-rose-400 mt-1">0</div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700 p-5 rounded-2xl">
+                    <div class="text-xs text-slate-400">אחוז הצלחה (Pass Rate)</div>
+                    <div id="stat-rate" class="text-2xl font-bold text-cyan-400 mt-1">0.0%</div>
+                </div>
+            </div>
+
+            <!-- Log Entries Table -->
+            <div class="bg-slate-800/40 border border-slate-700 rounded-2xl overflow-hidden">
+                <div class="p-4 bg-slate-800/60 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="font-semibold text-sm">רשומות הלוג שנטענו</h3>
+                    <div id="log-count-badge" class="text-xs px-2.5 py-1 bg-slate-700 rounded-lg text-slate-300">0 רשומות</div>
+                </div>
+                <div class="overflow-x-auto max-h-96">
+                    <table class="w-full text-right text-sm">
+                        <thead class="bg-slate-800/80 text-slate-400 text-xs uppercase sticky top-0 border-b border-slate-700">
+                            <tr>
+                                <th class="px-6 py-4">זמן</th>
+                                <th class="px-6 py-4">שם הטסט</th>
+                                <th class="px-6 py-4">סטטוס</th>
+                                <th class="px-6 py-4">משך (שניות)</th>
+                                <th class="px-6 py-4">חומרה</th>
+                                <th class="px-6 py-4">הודעה</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body" class="divide-y divide-slate-700/60">
+                            <tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">עדיין לא נטען קובץ לוג</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800/50 border-t border-slate-700 py-4 text-center text-xs text-slate-500">
+        Enterprise QA Operations Web Suite • Antigravity AI Engineering • Cross-Platform Ready
+    </footer>
+
+    <!-- App Script -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,10 @@
+timestamp,test_name,status,duration_sec,severity,message
+2026-11-11 10:00:01,test_auth_valid_login,PASSED,0.45,INFO,User logged in successfully
+2026-11-11 10:00:02,test_auth_invalid_password,PASSED,0.32,INFO,Correctly rejected invalid password
+2026-11-11 10:00:03,test_checkout_empty_cart,PASSED,0.21,INFO,Handled empty cart
+2026-11-11 10:00:04,test_checkout_payment_timeout,FAILED,5.20,ERROR,Payment gateway timed out after 5000ms
+2026-11-11 10:00:09,test_user_profile_load,PASSED,0.65,INFO,Profile fetched
+2026-11-11 10:00:10,test_database_connection_pool,FAILED,3.10,CRITICAL,DB connection pool exhausted
+2026-11-11 10:00:13,test_cache_latency,PASSED,1.85,WARNING,Cache response time above 1500ms threshold
+2026-11-11 10:00:15,test_search_indexing,PASSED,0.92,INFO,Index verified
+

@@ -1,0 +1,32 @@
+from csv import *
+tasks = []
+path = "C:\\Users\\Admin\\tasks.csv"
+
+def run_app():
+    global tasks
+    while True:
+        print("1. Load\n2. Add\n3. Save & Exit")
+        c = input("Choice: ")
+        if c == "1":
+            try:
+                f = open(path, "r")
+                for row in reader(f): tasks.append(row)
+                f.close()
+                print("Loaded!")
+            except Exception:
+                print("Failed")
+        elif c == "2":
+            tasks.append([input("Name: "), input("Priority: "), "Pending"])
+        elif c == "3":
+            f = open(path, "w", newline='')
+            w = writer(f)
+            i = 0
+            while i < len(tasks):
+                w.writerow(tasks[i])
+                i = i + 1
+            f.close()
+            break
+        else: print("Bad choice")
+
+if __name__ == "__main__":
+    run_app()

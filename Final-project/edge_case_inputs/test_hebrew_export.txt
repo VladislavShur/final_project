@@ -1,0 +1,14 @@
+============================================================
+           TEST EXECUTION SUMMARY REPORT
+============================================================
+Total Tests Run   : 1
+Passed Tests      : 0
+Failed Tests      : 1
+Other Tests       : 0
+Pass Rate         : 0.00%
+Average Duration  : 1.00s
+Min Duration      : 1.00s
+Max Duration      : 1.00s
+============================================================
+
+--- Filtered Errors & Warnings ---
